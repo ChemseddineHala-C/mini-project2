@@ -12,32 +12,32 @@ const createToken = (user) => {
 //register's operation
 const register = async (req, res) => {
   try {
-    const { name, email, passowrd, role } = req.body;
+    const { name, email, password, role } = req.body;
 
-    if (!name || !email || !passowrd || !role) {
+    if (!name || !email || !password || !role) {
       return res.status(400).json({ message: "all fields are required" });
     }
 
     const existingEmail = await User.findOne({ email });
-    if (!existingEmail) {
-      return res.status(400).json({ message: "email already registred" });
+    if (existingEmail) {
+      return res.status(400).json({ message: "email already registered" });
     }
 
-    const hashPassword = bcrypt.hash(passowrd, 10);
+    const hashPassword = await bcrypt.hash(password, 10);
 
-    const newUser = User.create({
+    const newUser = await User.create({
       name,
       email,
-      passowrd: hashPassword,
+      password: hashPassword,
       role,
     });
 
     const token = createToken(newUser);
 
-    return res.status(401).json({
+    return res.status(201).json({
       message: "User registered successfully",
       token,
-      user: { name: newUser.name, email: newUser.email, role: newUser.email },
+      user: { name: newUser.name, email: newUser.email, role: newUser.role },
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -60,7 +60,7 @@ const login = async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    const isMatch = await bcrypt.compare(password, user.passowrd);
+    const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password" });

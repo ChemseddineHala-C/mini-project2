@@ -13,7 +13,7 @@ const getAllBooks = async (req, res) => {
 //get one book by id
 const getBookById = async (req, res) => {
   try {
-    const book = await Book.findById(req.param.id);
+    const book = await Book.findById(req.params.id);
     if (!book) {
       return res.status(404).json({ message: "Book not found" });
     }
@@ -46,21 +46,21 @@ const getBooksByAuthor = async (req, res) => {
 //post a book
 const postBook = async (req, res) => {
   try {
-    const { title, author, genre, totalCopies, avaibleCopies } = req.body;
+    const { title, author, genre, totalCopies, availableCopies } = req.body;
 
-    if (!title || !author || !genre || !totalCopies || !avaibleCopies) {
-      res.status(400).jaon({ message: "all fields are required" });
+    if (!title || !author || !genre || !totalCopies || !availableCopies) {
+      return res.status(400).json({ message: "all fields are required" });
     }
     const newBook = await Book.create({
       title,
       author,
       genre,
       totalCopies,
-      avaibleCopies,
+      availableCopies,
     });
     res.status(201).json(newBook);
   } catch (error) {
-    res.status(500).json({ Message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -71,7 +71,7 @@ const updateBookInfo = async (req, res) => {
       new: true,
     });
     if (!book) {
-      res.status(404).json({ message: "Book not found" });
+      return res.status(404).json({ message: "Book not found" });
     }
     res.status(200).json(book);
   } catch (error) {
@@ -84,7 +84,7 @@ const deleteBook = async (req, res) => {
   try {
     const book = await Book.findByIdAndDelete(req.params.id);
     if (!book) {
-      res.status(404).json({ message: "Book not found" });
+      return res.status(404).json({ message: "Book not found" });
     }
     res.status(200).json({ message: "Book deleted successfully" });
   } catch (error) {
