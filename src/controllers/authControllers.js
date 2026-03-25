@@ -4,10 +4,12 @@ const User = require("../models/userModel");
 
 const SECRET = "chamsuu";
 
+//creat token
 const createToken = (user) => {
   return jwt.sign({ id: user._id, email: user.email, role: user.role }, SECRET);
 };
 
+//register's operation
 const register = async (req, res) => {
   try {
     const { name, email, passowrd, role } = req.body;
@@ -42,6 +44,7 @@ const register = async (req, res) => {
   }
 };
 
+// login's operation
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;

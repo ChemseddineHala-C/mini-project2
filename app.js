@@ -5,6 +5,4 @@ const connectDB = require("./src/db/database");
 app.use(express.json());
 connectDB();
 
-
-
 module.exports = app;

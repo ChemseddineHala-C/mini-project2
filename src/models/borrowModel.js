@@ -4,8 +4,16 @@ const Book = require("./bookModel");
 
 const borrowSchema = new mongoose.Schema(
   {
-    user: User,
-    book: Book,
+    user: {
+      type: mongoose.Schema.Types.ObjectId, // just the id
+      ref: "User", // reference to User model
+      required: true,
+    },
+    book: {
+      type: mongoose.Schema.Types.ObjectId, // just the id
+      ref: "Book", // reference to Book model
+      required: true,
+    },
     borrowedAt: {
       type: Date,
       default: Date.now,
