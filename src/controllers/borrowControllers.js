@@ -6,17 +6,17 @@ const borrowBook = async (req, res) => {
   try {
     const book = await Book.findById(req.body.bookId);
     if (!book) {
-      res.status(404).json({ message: "book not found" });
+      return res.status(404).json({ message: "book not found" });
     }
     if (book.availableCopies <= 0) {
-      res.status(400).json({ message: "No copies available" });
+      return res.status(400).json({ message: "No copies available" });
     }
-    const newBorrow = await create({
-      userId: req.body.userId,
+    const newBorrow = await Borrow.create({
+      userId: req.user.id,
       bookId: req.body.bookId,
     });
     if (!newBorrow) {
-      res.status(500).json({ message: "Operation hasn't done" });
+      return res.status(500).json({ message: "Operation hasn't done" });
     }
     const decrease = await Book.findByIdAndUpdate(
       req.body.bookId,
@@ -24,7 +24,7 @@ const borrowBook = async (req, res) => {
       { new: true },
     );
     if (!decrease) {
-      res.status(500).json({ message: "Operation hasn't done" });
+      return res.status(500).json({ message: "Operation hasn't done" });
     }
     res.status(200).json(newBorrow);
   } catch (error) {
@@ -42,7 +42,7 @@ const returnBook = async (req, res) => {
     if (borrow.status !== "borrowed") {
       res.status(400).json({ message: "Book already returned" });
     }
-    if (borrow.user !== req.user.id) {
+    if (borrow.userId !== req.user.id) {
       res.status(403).json({ message: "this is not your borrow record" });
     }
     const updateBorrow = await Borrow.findByIdAndUpdate(
@@ -57,7 +57,7 @@ const returnBook = async (req, res) => {
       res.status(404).json({ message: "borrow not found" });
     }
     const updateBook = await Book.findByIdAndUpdate(
-      borrow.book,
+      borrow.bookId,
       {
         $inc: { avaibleCopies: 1 },
       },

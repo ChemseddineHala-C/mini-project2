@@ -9,8 +9,8 @@ const {
   deleteUserById,
 } = require("../controllers/userControllers");
 
-router.get("/", getAllUsers);
-router.get("/:id", getUserById);
-router.delete("/:id", deleteUserById);
+router.get("/", protect, allowOnly("admin"), getAllUsers);
+router.get("/:id", protect, getUserById);
+router.delete("/:id", protect, allowOnly("admin"), deleteUserById);
 
 module.exports = router;

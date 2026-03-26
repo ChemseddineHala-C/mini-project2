@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User = require("../models/userModel");
-const SECRET = process.env.JWT_SECRET;
+const SECRET = "chamsuu";
 
 //creat token
 const createToken = (user) => {

@@ -3,7 +3,10 @@ const Book = require("../models/bookModel");
 //get all books
 const getAllBooks = async (req, res) => {
   try {
-    const books = await Book.find();
+    const filter = {};
+    if (req.query.genre) filter.genre = req.query.genre;
+    if (req.query.author) filter.author = req.query.author;
+    const books = await Book.find(filter);
     return res.status(200).json(books);
   } catch (error) {
     res.status(500).json({ message: error.message });

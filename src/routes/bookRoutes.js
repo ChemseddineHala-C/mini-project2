@@ -12,11 +12,10 @@ const {
   deleteBook,
 } = require("../controllers/bookControllers");
 
-router.get("/", getAllBooks);
-router.get("/:id", getBookById);
-router.get("/search", getBooksByFilter);
-router.post("/", postBook);
-router.put("/:id", updateBookInfo);
-router.delete("/:id", deleteBook);
+router.get("/", protect, getAllBooks);
+router.get("/:id", protect, getBookById);
+router.post("/", protect, allowOnly("admin"), postBook);
+router.put("/:id", protect, allowOnly("admin"), updateBookInfo);
+router.delete("/:id", protect, allowOnly("admin"), deleteBook);
 
 module.exports = router;
