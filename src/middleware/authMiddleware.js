@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const SECRET = "chamsuu";
+const SECRET = process.env.JWT_SECRET;
 
 const protect = (req, res, next) => {
   const authHeader = req.headers["authorization"];
