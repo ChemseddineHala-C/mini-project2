@@ -18,7 +18,7 @@ const register = async (req, res) => {
       return res.status(400).json({ message: "all fields are required" });
     }
 
-    const existingEmail = await User.findOne({ email });
+    const existingEmail = await User.findOne({ email: email });
     if (existingEmail) {
       return res.status(400).json({ message: "email already registered" });
     }
@@ -26,17 +26,17 @@ const register = async (req, res) => {
     const hashPassword = await bcrypt.hash(password, 10);
 
     const newUser = await User.create({
-      name,
-      email,
+      name: name,
+      email: email,
       password: hashPassword,
-      role,
+      role: role,
     });
 
     const token = createToken(newUser);
 
     return res.status(201).json({
       message: "User registered successfully",
-      token,
+      token: token,
       user: { name: newUser.name, email: newUser.email, role: newUser.role },
     });
   } catch (error) {
@@ -55,7 +55,7 @@ const login = async (req, res) => {
         .json({ message: "Email and password are required" });
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: email });
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
@@ -70,7 +70,7 @@ const login = async (req, res) => {
 
     res.status(200).json({
       message: "Login successful",
-      token,
+      token: token,
       user: { id: user._id, name: user.name, email: user.email },
     });
   } catch (error) {

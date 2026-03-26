@@ -8,10 +8,13 @@ const borrowBook = async (req, res) => {
     if (!book) {
       res.status(404).json({ message: "book not found" });
     }
-    if (book.avaibleCopies <= 0) {
-      res.status(400).json({ message: "No copies avaible" });
+    if (book.availableCopies <= 0) {
+      res.status(400).json({ message: "No copies available" });
     }
-    const newBorrow = await create(req.user.id, req.body.bookId);
+    const newBorrow = await create({
+      userId: req.body.userId,
+      bookId: req.body.bookId,
+    });
     if (!newBorrow) {
       res.status(500).json({ message: "Operation hasn't done" });
     }

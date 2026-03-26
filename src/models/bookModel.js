@@ -18,7 +18,7 @@ const bookSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    avaibleCopies: {
+    availableCopies: {
       type: Number,
       required: true,
     },

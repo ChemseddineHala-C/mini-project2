@@ -23,20 +23,17 @@ const getBookById = async (req, res) => {
   }
 };
 
-//get books depending on their genre
-const getBooksByGenre = async (req, res) => {
+//get books depending on their genre or their genre
+const getBooksByFilter = async (req, res) => {
   try {
-    const books = await Book.find({ genre: req.query.genre });
-    res.status(200).json(books);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-//get books depending on their author
-const getBooksByAuthor = async (req, res) => {
-  try {
-    const books = await Book.find({ author: req.query.author });
+    const filter = {};
+    if (req.query.genre) {
+      filter.genre = req.query.genre;
+    }
+    if (req.query.author) {
+      filter.author = req.query.author;
+    }
+    const books = await Book.find(filter);
     res.status(200).json(books);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -52,11 +49,11 @@ const postBook = async (req, res) => {
       return res.status(400).json({ message: "all fields are required" });
     }
     const newBook = await Book.create({
-      title,
-      author,
-      genre,
-      totalCopies,
-      availableCopies,
+      title: title,
+      author: author,
+      genre: genre,
+      totalCopies: totalCopies,
+      availableCopies: availableCopies,
     });
     res.status(201).json(newBook);
   } catch (error) {
@@ -95,8 +92,7 @@ const deleteBook = async (req, res) => {
 module.exports = {
   getAllBooks,
   getBookById,
-  getBooksByGenre,
-  getBooksByAuthor,
+  getBooksByFilter,
   postBook,
   updateBookInfo,
   deleteBook,

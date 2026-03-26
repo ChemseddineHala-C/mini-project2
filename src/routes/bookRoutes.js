@@ -6,19 +6,17 @@ const router = express.Router();
 const {
   getAllBooks,
   getBookById,
-  getBooksByGenre,
-  getBooksByAuthor,
+  getBooksByFilter,
   postBook,
   updateBookInfo,
   deleteBook,
 } = require("../controllers/bookControllers");
 
-router.get("/", protect, getAllBooks);
-router.get("/:id", protect, getBookById);
-router.get("/genre", protect, getBooksByGenre);
-router.get("/author", protect, getBooksByAuthor);
-router.post("/", protect, allowOnly("admin"), postBook);
-router.put("/:id", protect, allowOnly("admin"), updateBookInfo);
-router.delete("/:id", protect, allowOnly("admin"), deleteBook);
+router.get("/", getAllBooks);
+router.get("/:id", getBookById);
+router.get("/search", getBooksByFilter);
+router.post("/", postBook);
+router.put("/:id", updateBookInfo);
+router.delete("/:id", deleteBook);
 
 module.exports = router;
