@@ -26,23 +26,6 @@ const getBookById = async (req, res) => {
   }
 };
 
-//get books depending on their genre or their genre
-const getBooksByFilter = async (req, res) => {
-  try {
-    const filter = {};
-    if (req.query.genre) {
-      filter.genre = req.query.genre;
-    }
-    if (req.query.author) {
-      filter.author = req.query.author;
-    }
-    const books = await Book.find(filter);
-    res.status(200).json(books);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
 //post a book
 const postBook = async (req, res) => {
   try {
@@ -95,7 +78,6 @@ const deleteBook = async (req, res) => {
 module.exports = {
   getAllBooks,
   getBookById,
-  getBooksByFilter,
   postBook,
   updateBookInfo,
   deleteBook,

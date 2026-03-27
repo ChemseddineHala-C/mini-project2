@@ -20,7 +20,7 @@ const borrowBook = async (req, res) => {
     }
     const decrease = await Book.findByIdAndUpdate(
       req.body.bookId,
-      { $inc: { avaibleCopies: -1 } },
+      { $inc: { availableCopies: -1 } },
       { new: true },
     );
     if (!decrease) {
@@ -59,7 +59,7 @@ const returnBook = async (req, res) => {
     const updateBook = await Book.findByIdAndUpdate(
       borrow.bookId,
       {
-        $inc: { avaibleCopies: 1 },
+        $inc: { availableCopies: 1 },
       },
       { new: true },
     );
@@ -85,7 +85,7 @@ const getAllBorrows = async (req, res) => {
 //get my borrows
 const getMyBorrows = async (req, res) => {
   try {
-    const myBorrows = await Borrow.findById(req.user.id);
+    const myBorrows = await Borrow.find({ userId: req.user.id });
     if (!myBorrows) {
       res.status(404).json({ message: "borrows not found" });
     }

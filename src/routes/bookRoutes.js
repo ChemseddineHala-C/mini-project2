@@ -6,7 +6,6 @@ const router = express.Router();
 const {
   getAllBooks,
   getBookById,
-  getBooksByFilter,
   postBook,
   updateBookInfo,
   deleteBook,
