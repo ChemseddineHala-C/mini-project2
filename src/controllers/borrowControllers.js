@@ -37,13 +37,15 @@ const returnBook = async (req, res) => {
   try {
     const borrow = await Borrow.findById(req.params.id);
     if (!borrow) {
-      res.status(404).json({ message: "Borrow not found" });
+      return res.status(404).json({ message: "Borrow not found" });
     }
     if (borrow.status !== "borrowed") {
-      res.status(400).json({ message: "Book already returned" });
+      return res.status(400).json({ message: "Book already returned" });
     }
     if (borrow.userId !== req.user.id) {
-      res.status(403).json({ message: "this is not your borrow record" });
+      return res
+        .status(403)
+        .json({ message: "this is not your borrow record" });
     }
     const updateBorrow = await Borrow.findByIdAndUpdate(
       borrow._id,
@@ -54,7 +56,7 @@ const returnBook = async (req, res) => {
       { new: true },
     );
     if (!updateBorrow) {
-      res.status(404).json({ message: "borrow not found" });
+      return res.status(404).json({ message: "borrow not found" });
     }
     const updateBook = await Book.findByIdAndUpdate(
       borrow.bookId,
@@ -64,7 +66,7 @@ const returnBook = async (req, res) => {
       { new: true },
     );
     if (!updateBook) {
-      res.status(404).json({ message: "Book not found" });
+      return res.status(404).json({ message: "Book not found" });
     }
     res.status(200).json(updateBorrow);
   } catch (error) {
@@ -91,7 +93,7 @@ const getMyBorrows = async (req, res) => {
     }
     res.status(200).json(myBorrows);
   } catch (error) {
-    res.status(500).json({ message: error.messsage });
+    res.status(500).json({ message: error.message });
   }
 };
 

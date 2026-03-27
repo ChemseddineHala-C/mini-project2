@@ -16,9 +16,9 @@ const borrowSchema = new mongoose.Schema(
     },
     borrowedAt: {
       type: Date,
-      default: Date.now,
+      default: Date.now(),
     },
-    returnedAT: {
+    returnedATt: {
       type: Date,
       default: null,
     },
