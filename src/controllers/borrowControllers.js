@@ -42,7 +42,7 @@ const returnBook = async (req, res) => {
     if (borrow.status !== "borrowed") {
       return res.status(400).json({ message: "Book already returned" });
     }
-    if (borrow.userId !== req.user.id) {
+    if (borrow.userId.toString() !== req.user.id) {
       return res
         .status(403)
         .json({ message: "this is not your borrow record" });
@@ -51,7 +51,7 @@ const returnBook = async (req, res) => {
       borrow._id,
       {
         status: "returned",
-        returnedAt: Date.now,
+        returnedAt: Date.now(),
       },
       { new: true },
     );

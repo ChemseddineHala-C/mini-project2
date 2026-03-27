@@ -10,8 +10,8 @@ const {
 } = require("../controllers/borrowControllers");
 
 router.post("/", protect, borrowBook);
-router.put("/:id/return", protect, returnBook);
-router.get("/", protect, allowOnly("admin"), getAllBorrows);
 router.get("/my", protect, getMyBorrows);
+router.get("/", protect, allowOnly("admin"), getAllBorrows);
+router.put("/:id/return", protect, returnBook);
 
 module.exports = router;

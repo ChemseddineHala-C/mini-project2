@@ -1,6 +1,4 @@
 const mongoose = require("mongoose");
-const User = require("./userModel");
-const Book = require("./bookModel");
 
 const borrowSchema = new mongoose.Schema(
   {
@@ -16,7 +14,7 @@ const borrowSchema = new mongoose.Schema(
     },
     borrowedAt: {
       type: Date,
-      default: Date.now(),
+      default: Date.now,
     },
     returnedATt: {
       type: Date,
