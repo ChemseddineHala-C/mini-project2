@@ -22,8 +22,6 @@ const getBookById = asyncHandler(async (req, res) => {
 const postBook = asyncHandler(async (req, res) => {
   const { title, author, genre, totalCopies, availableCopies } = req.body;
 
-  if (!title || !author || !genre || !totalCopies || !availableCopies)
-    throw new AppError("all fields are required", 400);
   const newBook = await Book.create({
     title,
     author,

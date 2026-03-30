@@ -8,6 +8,6 @@ const {
 const validateMiddleware = require("../utils/validateMiddleware");
 
 router.post("/register", registerValidator, validateMiddleware, register);
-router.post("/login", loginValidator, loginValidator, login);
+router.post("/login", loginValidator, validateMiddleware, login);
 
 module.exports = router;

@@ -14,9 +14,6 @@ const createToken = (user) => {
 const register = asyncHandler(async (req, res) => {
   const { name, email, password, role } = req.body;
 
-  if (!name || !email || !password || !role)
-    throw new AppError("all fields are required", 400);
-
   const existingEmail = await User.findOne({ email: email });
   if (existingEmail) throw new AppError("Email already registred");
 
@@ -41,9 +38,6 @@ const register = asyncHandler(async (req, res) => {
 // login's operation
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-
-  if (!email || !password)
-    throw new AppError("Email and password are required", 400);
 
   const user = await User.findOne({ email: email });
   if (!user) throw new AppError("Invalid email or password", 401);

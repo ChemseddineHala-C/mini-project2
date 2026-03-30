@@ -18,7 +18,10 @@ const borrowBook = asyncHandler(async (req, res) => {
     req.body.bookId,
     { $inc: { availableCopies: -1 } },
     { new: true },
-  );
+  )
+    .populate("userId", "name email")
+    .populate("bookId", "titel author");
+
   if (!decrease) throw new AppError("Operation hasn't done", 500);
   res.status(200).json(newBorrow);
 });
@@ -38,7 +41,10 @@ const returnBook = asyncHandler(async (req, res) => {
       returnedAt: Date.now(),
     },
     { new: true },
-  );
+  )
+    .populate("userId", "name email")
+    .populate("bookId", "titel author");
+
   if (!updateBorrow) throw new AppError("borrow not found", 404);
   const updateBook = await Book.findByIdAndUpdate(
     borrow.bookId,
@@ -53,13 +59,17 @@ const returnBook = asyncHandler(async (req, res) => {
 
 //get all borrows
 const getAllBorrows = asyncHandler(async (req, res) => {
-  const borrows = await Borrow.find();
+  const borrows = await Borrow.find()
+    .populate("userId", "name email role")
+    .populate("bookId", "title author genre");
   res.status(200).json(borrows);
 });
 
 //get my borrows
 const getMyBorrows = asyncHandler(async (req, res) => {
-  const myBorrows = await Borrow.find({ userId: req.user.id });
+  const myBorrows = await Borrow.find({ userId: req.user.id })
+    .populate("UserId", "name email role")
+    .populate("bookId", "title author genre availableCopies");
   if (!myBorrows) throw new AppError("borrow not found", 404);
   res.status(200).json(myBorrows);
 });
