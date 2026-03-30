@@ -8,8 +8,10 @@ const {
   getAllBorrows,
   getMyBorrows,
 } = require("../controllers/borrowControllers");
+const { borrowValidator } = require("../validators/borrowValidator");
+const validateMiddleware = require("../utils/validateMiddleware");
 
-router.post("/", protect, borrowBook);
+router.post("/", protect, borrowValidator, validateMiddleware, borrowBook);
 router.get("/my", protect, getMyBorrows);
 router.get("/", protect, allowOnly("admin"), getAllBorrows);
 router.put("/:id/return", protect, returnBook);
