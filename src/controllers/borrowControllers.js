@@ -1,100 +1,67 @@
 const Borrow = require("../models/borrowModel");
 const Book = require("../models/bookModel");
+const AppError = require("../utils/AppError");
+const asyncHandler = require("../utils/asyncHandler");
 
 //borrow a book
-const borrowBook = async (req, res) => {
-  try {
-    const book = await Book.findById(req.body.bookId);
-    if (!book) {
-      return res.status(404).json({ message: "book not found" });
-    }
-    if (book.availableCopies <= 0) {
-      return res.status(400).json({ message: "No copies available" });
-    }
-    const newBorrow = await Borrow.create({
-      userId: req.user.id,
-      bookId: req.body.bookId,
-    });
-    if (!newBorrow) {
-      return res.status(500).json({ message: "Operation hasn't done" });
-    }
-    const decrease = await Book.findByIdAndUpdate(
-      req.body.bookId,
-      { $inc: { availableCopies: -1 } },
-      { new: true },
-    );
-    if (!decrease) {
-      return res.status(500).json({ message: "Operation hasn't done" });
-    }
-    res.status(200).json(newBorrow);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+const borrowBook = asyncHandler(async (req, res) => {
+  const book = await Book.findById(req.body.bookId);
+  if (!book) throw new AppError("book not found", 404);
+  if (book.availableCopies <= 0) throw new AppError("no copies available", 400);
+
+  const newBorrow = await Borrow.create({
+    userId: req.user.id,
+    bookId: req.body.bookId,
+  });
+  if (!newBorrow) throw new AppError("Operation hasn't done", 500);
+  const decrease = await Book.findByIdAndUpdate(
+    req.body.bookId,
+    { $inc: { availableCopies: -1 } },
+    { new: true },
+  );
+  if (!decrease) throw new AppError("Operation hasn't done", 500);
+  res.status(200).json(newBorrow);
+});
 
 // return book
-const returnBook = async (req, res) => {
-  try {
-    const borrow = await Borrow.findById(req.params.id);
-    if (!borrow) {
-      return res.status(404).json({ message: "Borrow not found" });
-    }
-    if (borrow.status !== "borrowed") {
-      return res.status(400).json({ message: "Book already returned" });
-    }
-    if (borrow.userId.toString() !== req.user.id) {
-      return res
-        .status(403)
-        .json({ message: "this is not your borrow record" });
-    }
-    const updateBorrow = await Borrow.findByIdAndUpdate(
-      borrow._id,
-      {
-        status: "returned",
-        returnedAt: Date.now(),
-      },
-      { new: true },
-    );
-    if (!updateBorrow) {
-      return res.status(404).json({ message: "borrow not found" });
-    }
-    const updateBook = await Book.findByIdAndUpdate(
-      borrow.bookId,
-      {
-        $inc: { availableCopies: 1 },
-      },
-      { new: true },
-    );
-    if (!updateBook) {
-      return res.status(404).json({ message: "Book not found" });
-    }
-    res.status(200).json(updateBorrow);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+const returnBook = asyncHandler(async (req, res) => {
+  const borrow = await Borrow.findById(req.params.id);
+  if (!borrow) throw new AppError("borrow not found", 404);
+  if (borrow.status !== "borrowed")
+    throw new AppError("Book already returned", 400);
+  if (borrow.userId.toString() !== req.user.id)
+    throw new AppError("this is not your borrow record", 403);
+  const updateBorrow = await Borrow.findByIdAndUpdate(
+    borrow._id,
+    {
+      status: "returned",
+      returnedAt: Date.now(),
+    },
+    { new: true },
+  );
+  if (!updateBorrow) throw new AppError("borrow not found", 404);
+  const updateBook = await Book.findByIdAndUpdate(
+    borrow.bookId,
+    {
+      $inc: { availableCopies: 1 },
+    },
+    { new: true },
+  );
+  if (!updateBook) throw new AppError("book not found", 404);
+  res.status(200).json(updateBorrow);
+});
 
 //get all borrows
-const getAllBorrows = async (req, res) => {
-  try {
-    const borrows = await Borrow.find();
-    res.status(200).json(borrows);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+const getAllBorrows = asyncHandler(async (req, res) => {
+  const borrows = await Borrow.find();
+  res.status(200).json(borrows);
+});
 
 //get my borrows
-const getMyBorrows = async (req, res) => {
-  try {
-    const myBorrows = await Borrow.find({ userId: req.user.id });
-    if (!myBorrows) {
-      res.status(404).json({ message: "borrows not found" });
-    }
-    res.status(200).json(myBorrows);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+const getMyBorrows = asyncHandler(async (req, res) => {
+  const myBorrows = await Borrow.find({ userId: req.user.id });
+  if (!myBorrows) throw new AppError("borrow not found", 404);
+  res.status(200).json(myBorrows);
+});
 
 module.exports = { borrowBook, returnBook, getAllBorrows, getMyBorrows };

@@ -1,39 +1,24 @@
 const User = require("../models/userModel");
-
+const AppError = require("../utils/AppError");
+const asyncHandler = require("../utils/asyncHandler");
 // get all users
-const getAllUsers = async (req, res) => {
-  try {
-    const users = await User.find();
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+const getAllUsers = asyncHandler(async (req, res) => {
+  const users = await User.find();
+  res.status(200).json(users);
+});
 
 // get one user by id
-const getUserById = async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+const getUserById = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (!user) throw new AppError("User not found", 404);
+  res.status(200).json(user);
+});
 
 // delete one user by id
 const deleteUserById = async (req, res) => {
-  try {
-    const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    res.status(200).json({ message: "User deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+  const user = await User.findByIdAndDelete(req.params.id);
+  if (!user) throw new AppError("User not found", 404);
+  res.status(200).json({ message: "User deleted successfully" });
 };
 
 module.exports = { getAllUsers, getUserById, deleteUserById };

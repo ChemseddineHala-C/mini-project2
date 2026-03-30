@@ -1,6 +1,8 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User = require("../models/userModel");
+const AppError = require("../utils/AppError");
+const asyncHandler = require("../utils/asyncHandler");
 const SECRET = process.env.JWT_SECRET;
 
 //creat token
@@ -9,72 +11,54 @@ const createToken = (user) => {
 };
 
 //register's operation
-const register = async (req, res) => {
-  try {
-    const { name, email, password, role } = req.body;
+const register = asyncHandler(async (req, res) => {
+  const { name, email, password, role } = req.body;
 
-    if (!name || !email || !password || !role) {
-      return res.status(400).json({ message: "all fields are required" });
-    }
+  if (!name || !email || !password || !role)
+    throw new AppError("all fields are required", 400);
 
-    const existingEmail = await User.findOne({ email: email });
-    if (existingEmail) {
-      return res.status(400).json({ message: "email already registered" });
-    }
+  const existingEmail = await User.findOne({ email: email });
+  if (existingEmail) throw new AppError("Email already registred");
 
-    const hashPassword = await bcrypt.hash(password, 10);
+  const hashPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await User.create({
-      name: name,
-      email: email,
-      password: hashPassword,
-      role: role,
-    });
+  const newUser = await User.create({
+    name: name,
+    email: email,
+    password: hashPassword,
+    role: role,
+  });
 
-    const token = createToken(newUser);
+  const token = createToken(newUser);
 
-    return res.status(201).json({
-      message: "User registered successfully",
-      token: token,
-      user: { name: newUser.name, email: newUser.email, role: newUser.role },
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+  return res.status(201).json({
+    message: "User registered successfully",
+    token: token,
+    user: { name: newUser.name, email: newUser.email, role: newUser.role },
+  });
+});
 
 // login's operation
-const login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
+const login = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res
-        .status(400)
-        .json({ message: "Email and password are required" });
-    }
+  if (!email || !password)
+    throw new AppError("Email and password are required", 400);
 
-    const user = await User.findOne({ email: email });
-    if (!user) {
-      return res.status(401).json({ message: "Invalid email or password" });
-    }
+  const user = await User.findOne({ email: email });
+  if (!user) throw new AppError("Invalid email or password", 401);
 
-    const isMatch = await bcrypt.compare(password, user.password);
+  const isMatch = await bcrypt.compare(password, user.password);
 
-    if (!isMatch) {
-      return res.status(401).json({ message: "Invalid email or password" });
-    }
+  if (!isMatch) throw new AppError("Invalid email or password", 401);
 
-    const token = createToken(user);
+  const token = createToken(user);
 
-    res.status(200).json({
-      message: "Login successful",
-      token: token,
-      user: { id: user._id, name: user.name, email: user.email },
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+  res.status(200).json({
+    message: "Login successful",
+    token: token,
+    user: { id: user._id, name: user.name, email: user.email },
+  });
+});
 
 module.exports = { register, login };
