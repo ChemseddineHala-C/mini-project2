@@ -7,8 +7,23 @@ const getAllBooks = asyncHandler(async (req, res) => {
   const filter = {};
   if (req.query.genre) filter.genre = req.query.genre;
   if (req.query.author) filter.author = req.query.author;
-  const books = await Book.find(filter);
-  return res.status(200).json(books);
+
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  const sortBy = req.query.sortBy || "createdAt";
+  const sortOrder = req.query.sortOrder === "asc" ? 1 : -1;
+
+  const total = await Book.countDocuments(filter);
+
+  const books = await Book.find(filter)
+    .sort({ [sortBy]: sortOrder })
+    .skip(skip)
+    .limit(limit);
+  return res
+    .status(200)
+    .json({ total, page, pages: Math.ceil(total / limit), limit, books });
 });
 
 //get one book by id

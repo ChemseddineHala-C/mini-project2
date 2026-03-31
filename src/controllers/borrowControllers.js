@@ -59,10 +59,22 @@ const returnBook = asyncHandler(async (req, res) => {
 
 //get all borrows
 const getAllBorrows = asyncHandler(async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  const total = await Book.countDocuments();
+
   const borrows = await Borrow.find()
     .populate("userId", "name email role")
-    .populate("bookId", "title author genre");
-  res.status(200).json(borrows);
+    .populate("bookId", "title author genre")
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+
+  res
+    .status(200)
+    .json({ total, page, pages: Math.ceil(total / limit), limit, borrows });
 });
 
 //get my borrows
