@@ -21,4 +21,29 @@ const deleteUserById = async (req, res) => {
   res.status(200).json({ message: "User deleted successfully" });
 };
 
-module.exports = { getAllUsers, getUserById, deleteUserById };
+const uploadProfilePic = asyncHandler(async (req, res) => {
+  // multer puts file info in req.file
+  if (!req.file) {
+    throw new AppError("Please upload a file", 400);
+  }
+
+  // Build file URL
+  const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+
+  // Update user profilePic in DB
+  const user = await User.findByIdAndUpdate(
+    req.user.id,
+    { profilePic: fileUrl },
+    { new: true },
+  ).select("-password");
+
+  if (!user) throw new AppError("User not found", 404);
+
+  res.status(200).json({
+    message: "Profile picture uploaded successfully",
+    profilePic: fileUrl,
+    user,
+  });
+});
+
+module.exports = { getAllUsers, getUserById, deleteUserById, uploadProfilePic };

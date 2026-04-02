@@ -20,6 +20,10 @@ const userShema = new mongoose.Schema(
       required: true,
       default: "librarian",
     },
+    profilePic: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true },
 );

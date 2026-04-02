@@ -12,6 +12,7 @@ const corsOptions = require("./src/config/crosOptions");
 const { globalLimiter, authLimiter } = require("./src/middleware/rateLimiter");
 
 const app = express();
+const path = require("path");
 
 // Security MiddleWare - ORDER MATTERS
 app.use(helmet());
@@ -39,7 +40,7 @@ app.use("/auth", authLimiter, authRoute);
 app.use("/users", userRoute);
 app.use("/books", bookRoute);
 app.use("/borrows", borrowRoute);
-
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // ERROR HANDLER
 app.use(errorMiddleware);
 
